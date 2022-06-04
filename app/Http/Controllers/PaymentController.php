@@ -1,0 +1,202 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use App\OAuth\OAuthUtil;
+use App\OAuth\OAuthToken;
+use App\OAuth\OAuthServer;
+use App\Models\Parishioner;
+use App\OAuth\OAuthRequest;
+use App\Models\Contribution;
+use App\OAuth\OAuthConsumer;
+use Illuminate\Http\Request;
+use App\OAuth\OAuthDataStore;
+use App\OAuth\OAuthSignatureMethod;
+use App\OAuth\OAuthSignatureMethod_RSA_SHA1;
+use App\OAuth\OAuthSignatureMethod_HMAC_SHA1;
+use App\OAuth\OAuthSignatureMethod_PLAINTEXT;
+use Illuminate\Support\Facades\URL;
+
+class PaymentController extends Controller
+{
+
+
+    public function verifyPayNumber(Request $request){
+       
+        $payNumber = $request->input('pay_number');
+        $parishioner_pay = Parishioner::where('pay_number',$payNumber)->get();
+
+       
+        if($parishioner_pay->count() > 0){
+            return view('payments.payment', compact('parishioner_pay'));
+           
+        }else{
+
+            // return 'not found' ;
+            return back()->with('status','invalid code');
+            
+        }
+
+
+
+        
+        
+
+    }
+    public function randomNumber()
+    {
+       $code = random_int(100000,999999);
+       return $code;
+    }
+
+    public function selfReg(Request $request){
+
+        $value ="unspecified";
+    
+
+        $request->validate([
+            'first_name'=>'required', 
+            'last_name'=>'required',
+            'phone'=>'required',
+
+     
+
+        ]);
+    
+       $parishioner = new Parishioner;
+       
+       $parishioner->first_name = $request->input('first_name');
+       $parishioner->middle_name = $request->input('middle_name');
+       $parishioner->last_name = $request->input('last_name');
+       $parishioner->phone = $request->input('phone');
+       $parishioner->email = $request->input('email');
+       $parishioner->pay_number = $this->randomNumber();
+       $parishioner->ubatizo_place = $request->input('ubatizo_place');
+       $parishioner->ubatizo_date = $request->input('ubatizo_date');
+       $parishioner->komunio_place = $request->input('komunio_place');
+       $parishioner->komunio_date = $request->input('komunio_date');
+       $parishioner->ndoa = ($request->input('ndoa') ? $request->input('ndoa') : 0);
+       $parishioner->status = ($request->input('status') ? $request->input('status') : 0);
+       $parishioner->gender =($request->input('gender') ? $request->input('gender') : $value);
+       $parishioner->user_id=1;
+       $parishioner->family_id=$request->input('family_id');
+      
+       $parishioner->save();
+
+       $parishioner_pay = Parishioner::where('pay_number',$parishioner->pay_number)->get();
+       if($parishioner_pay){
+           return view('payments.payment', compact('parishioner_pay'));
+       }else{
+           
+       }
+
+
+
+
+
+
+
+    }
+
+    public function selfRegIndex(){
+
+        return view('parishioners.self-reg');
+    }
+
+
+
+    //
+    public function loadForm( $id){
+
+        $parishioner_pay = Parishioner::find($id);
+
+        return view('payments.payment',compact('parishioner_pay'));
+    }
+
+    public function getStatus(Request $request)
+    {
+        // Transaction successfull
+        $pesapal_transaction_tracking_id = $request->get('pesapal_transaction_tracking_id');
+        $Order_Tracking_Id = $request->get('Order_Tracking_Id');
+        $pesapal_merchant_reference = $request->get('pesapal_merchant_reference');
+        
+        if ($pesapal_transaction_tracking_id) {
+            return $pesapal_merchant_reference;
+        }
+    }
+
+    public function sendRequest(Request $request){
+
+
+//pesapal params
+$token = $params = NULL;
+
+/*
+PesaPal Sandbox is at http://demo.pesapal.com. Use this to test your developement and
+when you are ready to go live change to https://www.pesapal.com.
+*/
+$consumer_key =    '87xclFHckvQqY2PFNHwY0BKlqOejeVXI';//Register a merchant account on
+                   //demo.pesapal.com and use the merchant key for testing.
+                   //When you are ready to go live make sure you change the key to the live account
+                   //registered on www.pesapal.com!
+$consumer_secret = 'ngnXiwm6ZXzzXJ5MlLjPkHXm3sQ=';// Use the secret from your test
+                   //account on demo.pesapal.com. When you are ready to go live make sure you
+                   //change the secret to the live account registered on www.pesapal.com!
+$signature_method = new OAuthSignatureMethod_HMAC_SHA1();
+$iframelink = 'https://www.pesapal.com/api/PostPesapalDirectOrderV4';//change to
+                   //https://www.pesapal.com/API/PostPesapalDirectOrderV4 when you are ready to go live!
+
+//get form details
+$amount = $_POST['amount'];
+$amount = number_format($amount, 2);//format amount to 2 decimal places
+
+$desc = $_POST['description'];
+$type = $_POST['type']; //default value = MERCHANT
+$reference = $_POST['reference'];//unique order id of the transaction, generated by merchant
+$first_name = $_POST['first_name'];
+$last_name = $_POST['last_name'];
+$email = $_POST['email'];
+$phonenumber = '';//ONE of email or phonenumber is required
+
+$callback_url = URL::to('payment-status'); //redirect url, the page that will handle the response from pesapal.
+
+$post_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><PesapalDirectOrderInfo xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" Amount=\"".$amount."\" Description=\"".$desc."\" Type=\"".$type."\" Reference=\"".$reference."\" FirstName=\"".$first_name."\" LastName=\"".$last_name."\" Email=\"".$email."\" PhoneNumber=\"".$phonenumber."\" xmlns=\"http://www.pesapal.com\" />";
+$post_xml = htmlentities($post_xml);
+
+$consumer = new OAuthConsumer($consumer_key, $consumer_secret);
+
+//post transaction to pesapal
+$iframe_src = OAuthRequest::from_consumer_and_token($consumer, $token, "GET", $iframelink, $params);
+$iframe_src->set_parameter("oauth_callback", $callback_url);
+$iframe_src->set_parameter("pesapal_request_data", $post_xml);
+$iframe_src->sign_request($signature_method, $consumer, $token);
+
+$save_to_db = Contribution::create([
+    'amount' => $request->amount,
+    'reference' => $request->reference,
+    'parishioner_id' => $request->parishioner_id,
+    'category_id' => $request->category_id,
+    'payment_method_id' => 3
+]);
+
+
+
+return view('payments.pesapal-iframe', compact('iframe_src'));
+        //end function
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
