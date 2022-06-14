@@ -100,6 +100,7 @@ class ParishionerController extends Controller
        $parishioner->ndoa = $request->input('ndoa');
        $parishioner->status = $request->input('status');
        $parishioner->user_id=$user_id;
+       $parishioner->family_id=$request->input('family_id');
 
        $parishioner->save();
 
@@ -120,6 +121,9 @@ class ParishionerController extends Controller
     public function show(Parishioner $parishioner){
 
         $parishioners =Parishioner::find($parishioner);
+
+
+        
 
         return view('parishioners.show',compact('parishioner','parishioners'));
 

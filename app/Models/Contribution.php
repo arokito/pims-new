@@ -18,11 +18,11 @@ class Contribution extends Model
 
     public function contribution_category()
     {
-        return $this->belongsTo(ContributionCategory::class);
+        return $this->belongsTo(ContributionCategory::class, 'category_id', 'id');
     }
 
     public function payment_method()
     {
-        return $this->belongsTo(PaymentMethod::class);
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id', 'id');
     }
 }

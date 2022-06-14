@@ -7,6 +7,9 @@
 
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
+    <link rel="stylesheet" href="https://printjs-4de6.kxcdn.com/print.min.css"/>
+    
     <script>
         @if(Session::has('message'))
         toastr.options =

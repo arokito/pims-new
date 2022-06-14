@@ -1,23 +1,28 @@
+  @extends('layouts.guest')
 
-<button type="button" class="ml-4 text-sm text-gray-700 underline float-right btn btn-light" data-bs-toggle="modal" data-bs-target="#modalRegister">
-    
-    {{ __('Register') }}
-  </button>
-
-  <!-- Modal Content -->
-<div class="modal fade" id="modalRegister" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header border-0">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body px-md-5">
-                <h2 class="h4 text-center">{{ __('Register') }}</h2>
+          @section('content')
+          <div class="container p-5">
+            <p class="text-center">
+                <a href="/" class="d-flex align-items-center justify-content-center">
+                    <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd"></path></svg>
+                    Back to homepage
+                </a>
+            </p>
+              <div class="row justify-content-center">
+                  <div class="col-md-8">
+                      <div class="card ">
+                          <div class="card-header">
+                            <div class="text-center text-md-center mb-4 mt-md-0">
+                                <div class="avatar avatar-lg mx-auto mb-3"><img class="rounded-circle" alt="Image placeholder" src="{{ asset('assets\img\brand\yakobo mkuu.jpeg') }}"></div>
+                                <h1 class="h3">PIMS</h1>
+                                <p class="text-gray">Mt. Yakobo Mkuu Mtume, Utuombee...</p>
+                            </div>
+                            </div>
               
-           
+                 <div class="card-body">
                     <!-- Form -->
                     
-                    <form action="{{ route('register') }}" method="POST">
+                 <form action="{{ route('register') }}" method="POST">
                         @csrf
 
                         <div class="row mb-3">
@@ -50,10 +55,8 @@
                         </div>
                         
 
-                    <br>   
-
                     
-                    <div class="row mb-3">
+                      <div class="row mb-3">
                         <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
 
                         <div class="col-md-6">
@@ -65,25 +68,26 @@
                                 </span>
                             @enderror
                         </div>
-                    </div>
+                      </div>
 
-                    <div class="row mb-3">
+                      <div class="row mb-3">
                         <label for="password-confirm" class="col-md-4 col-form-label text-md-end">{{ __('Confirm Password') }}</label>
 
                         <div class="col-md-6">
                             <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
                         </div>
-                    </div>
+                      </div>
                     
    
 
-                          <div class="modal-footer">
-                           
+                        
+                      <div class="row mb-0">
+                        <div class="col-md-8 offset-md-4">
                             <button type="submit" class="btn btn-primary">
                                 {{ __('Register') }}
                             </button>
-                            <button type="button" class="btn btn-link text-gray ms-auto" data-bs-dismiss="modal">Close</button>
                         </div>
+                     </div>
 
                        
 
@@ -92,15 +96,25 @@
                     <!-- End of Form -->
                     
                    
-                </form>
+                  </form>
                 
                
                
-            </div>
+             </div>
            
         </div>
     </div>
 </div>
+</div>
 
-<div class="clear-both"></div>
+<div class="d-flex justify-content-center align-items-center mt-4">
+    <span class="fw-normal">
+        Already have an account? 
+        <a href="{{ route('login') }}" class="fw-bold">Login here</a>
+    </span>
+</div>
+    
+@endsection
+
+
 

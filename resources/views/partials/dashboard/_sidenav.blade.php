@@ -13,6 +13,9 @@
       return in_array(strtolower($path), $urls);
     }
 ?>
+<div class="spinner-grow text-primary" role="status">
+  <span class="visually-hidden">Loading...</span>
+</div>
 
 <nav id="sidebarMenu" class="sidebar d-lg-block bg-gray-800 text-white collapse" data-simplebar>
   <div class="sidebar-inner px-4 pt-3">
@@ -23,11 +26,20 @@
             alt="Yakobo mkuu">
         </div>
         <div class="d-block">
-          <h2 class="h5 mb-3">Hi, Jane</h2>
-          <a href="pages/examples/sign-in" class="btn btn-secondary btn-sm d-inline-flex align-items-center">
+          <h2 class="h5 mb-3">Hi, {{ auth()->user()->name }}</h2>
+          <a href="{{ route('logout') }}" class="btn btn-secondary btn-sm d-inline-flex align-items-center"
+          onclick="event.preventDefault();
+          document.getElementById('logout-form').submit();"
+          >
             <svg class="icon icon-xxs me-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>            
             Sign Out
           </a>
+
+        
+
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                @csrf
+            </form>
         </div>
       </div>
       <div class="collapse-close d-md-none">
@@ -38,24 +50,26 @@
           </a>
       </div>
     </div>
+    
     <ul class="nav flex-column pt-3 pt-md-0">
       <li class="nav-item">
-        <a href="index" class="nav-link d-flex align-items-center">
+        <a href="{{ route('dashboard.index') }}" class="nav-link d-flex align-items-center">
           <span class="sidebar-icon">
-            {{-- <img src="assets\img\brand\yakobo mkuu.jpeg" height="30" width="30" alt="PIMS Logo"> --}}
+            <img src="{{ asset('assets\img\brand\yakobo mkuu.jpeg') }}" class="card-img-top rounded-circle border-white avatar avatar-lg mx-auto mb-3"
+            alt="Yakobo mkuu">
           </span>
-          <span class="mt-1 ms-1 sidebar-text">PIMS</span>
+          {{-- <span class="mt-1 ms-1 sidebar-text">PIMS</span> --}}
         </a>
       </li>
       <li class="nav-item @if(isActiveUrl($urlPath, "overview")) active @endif">
-        <a href="pages/dashboard/dashboard" class="nav-link">
+        <a href="{{ route('dashboard.index') }}" class="nav-link">
           <span class="sidebar-icon">
             <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path></svg>
           </span> 
           <span class="sidebar-text">Dashboard</span>
         </a>
       </li>
-     
+     @role('Admin|Bursar')
       <li class="nav-item @if(isActiveUrl($urlPath, "contributions")) active @endif">
         <a href="{{ route('contributions.index') }}" class="nav-link">
           <span class="sidebar-icon">
@@ -78,7 +92,7 @@
           <span class="sidebar-text">Matumizi</span>
         </a>
       </li>
-    
+    @endrole
 
       
       <li class="nav-item @if(isActiveUrl($urlPath, "announcements")) active @endif">
@@ -112,12 +126,6 @@
         <div class="multi-level collapse @if(isActiveGroup($urlPath, ["zones", "families", "communities", "parishioners"])) show @endif" role="list"
           id="submenu-components" aria-expanded="false">
           <ul class="flex-column nav">
-            <li class="nav-item">
-              <a class="nav-link" target="_blank"
-                href="https://themesberg.com/docs/volt-bootstrap-5-dashboard/components/accordions/">
-                <span class="sidebar-text">Parokia Information</span>
-              </a>
-            </li>
             <li class="nav-item @if(isActiveUrl($urlPath, "zones")) active @endif">
               <a class="nav-link" href="{{ route('zones.index') }}">
                 <span class="sidebar-text">Kanda</span>
@@ -142,6 +150,53 @@
           </ul>
         </div>
       </li>
+  @role('Admin|Paroko|Bursar')
+      <li class="nav-item @if(isActiveGroup($urlPath, ["profit-and-loss", "expenses-report", "contributions-report", "parishioners-report"])) active @endif">
+        <span
+          class="nav-link @if(isActiveGroup($urlPath, ["profit-and-loss", "expenses-report", "contributions-report", "parishioners-report"])) active @endif d-flex justify-content-between align-items-center"
+          data-bs-toggle="collapse" data-bs-target="#submenu-report-components">
+          <span>
+            <span class="sidebar-icon">
+              <svg xmlns="http://www.w3.org/2000/svg"  fill="currentColor" class="icon icon-xs me-2" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M14.763.075A.5.5 0 0 1 15 .5v15a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V14h-1v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V10a.5.5 0 0 1 .342-.474L6 7.64V4.5a.5.5 0 0 1 .276-.447l8-4a.5.5 0 0 1 .487.022zM6 8.694 1 10.36V15h5V8.694zM7 15h2v-1.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V15h2V1.309l-7 3.5V15z"/>
+                <path d="M2 11h1v1H2v-1zm2 0h1v1H4v-1zm-2 2h1v1H2v-1zm2 0h1v1H4v-1zm4-4h1v1H8V9zm2 0h1v1h-1V9zm-2 2h1v1H8v-1zm2 0h1v1h-1v-1zm2-2h1v1h-1V9zm0 2h1v1h-1v-1zM8 7h1v1H8V7zm2 0h1v1h-1V7zm2 0h1v1h-1V7zM8 5h1v1H8V5zm2 0h1v1h-1V5zm2 0h1v1h-1V5zm0-2h1v1h-1V3z"/>
+              </svg>
+            </span> 
+            <span class="sidebar-text">Taarifa</span>
+          </span>
+          <span class="link-arrow">
+            <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+          </span>
+        </span>
+        <div class="multi-level collapse @if(isActiveGroup($urlPath, ["profit-and-loss", "expenses-report", "contributions-report", "parishioners-report"])) show @endif" role="list"
+          id="submenu-report-components" aria-expanded="false">
+          <ul class="flex-column nav">
+            <li class="nav-item @if(isActiveUrl($urlPath, "profit-and-loss")) active @endif">
+              <a class="nav-link" href="{{ route('profit-and-loss.index') }}">
+                <span class="sidebar-text">Repoti za Faida na Hasara</span>
+              </a>
+            </li>
+            <li class="nav-item @if(isActiveUrl($urlPath, "expenses-report")) active @endif">
+              <a class="nav-link" href="{{ route('expenses-report.index') }}">
+                <span class="sidebar-text">Repoti za Matumizi</span>
+              </a>
+            </li>
+            <li class="nav-item @if(isActiveUrl($urlPath, "contributions-report")) active @endif">
+              <a class="nav-link" href="{{ route('contributions-report.index') }}">
+                <span class="sidebar-text">Repoti za Michango</span>
+              </a>
+            </li>
+            <li class="nav-item @if(isActiveUrl($urlPath, "parishioners-report")) active @endif">
+              <a class="nav-link" href="{{ route('parishioners-report.index') }}">
+                <span class="sidebar-text">Repoti za Waumini</span>
+              </a>
+            </li>
+           
+          </ul>
+        </div>
+      </li>
+
+  @endrole
       <li role="separator" class="dropdown-divider mt-4 mb-3 border-gray-700"></li>
      
     </ul>

@@ -22,7 +22,7 @@
 </script>
 
 <div class="shadow bg-white rounded p-4 mt-4">
-    @include('users.assign-role')
+  
     <div class="table-responsive py-4">
         <table class="table table-striped" id="datatable">
             <thead class="thead-light">

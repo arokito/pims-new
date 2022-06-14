@@ -14,7 +14,7 @@ class Family extends Model
 
     public function community()
     {
-        return $this->belongsTo(Community::class);
+        return $this->belongsTo(Community::class,'community_id','id');
     }
 
     public function parishioners()

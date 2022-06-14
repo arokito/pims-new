@@ -4,50 +4,60 @@
 @extends('layouts.dashboard')
 
 @section('content')
-
-<div class="modal-body px-md-5">
-    <h2 class="h4 text-center"> assign role</h2>
+<div class="row">
+  <div class="col-md-12">
+    <div class="jumbotron text-center">
+      <h2>Role  </h2>
   
 
-        <!-- Form -->
+        
         
         <form action="{{ route('users.roles', $user->id) }}" method="POST">
             @csrf
-            <div class="row">
-              <div class="col">
-                <label for="first_name" >Role Name</label>
-                <select id="role" name="role" autocomplete="role-name">
-                @foreach ($roles as $role)
-                    <option value="{{ $role->name }}">{{ $role->name }}</option>
-                @endforeach
+ 
+        <div class="row mb-3">
+          <label for="role" class="col-md-4 col-form-label text-md-end">{{ __('role') }}</label>
+      
+          <div class="col-md-6">
+            <select id="role" name="role" class="form-control" >
+              <option value="">-- Select role --</option>
+              @foreach ($roles as $role)
+              <option value="{{ $role->name }}">{{ $role->name }}</option>
+              @endforeach
             </select>
-              </div>
-             
-            </div>
-
-        <br>   
-        
-
-
-              <div class="modal-footer">
-                <button type="submit" class="btn btn-secondary">save</button>
-             
-            </div>
+          
+      
+          
+          </div>
+        </div>
 
            
 
               
 
-        <!-- End of Form -->
+        <div class="row mb-3 ">
+
+          <div class="col-md-6  ">
+            <button type="submit" class="btn btn-primary ">
+              {{ __('Asign Role') }}
+            </button>
+        
+          
+          </div>
+  
+        
+        
+          </div>
+      
         
        
     </form>
+
+
+          </div>
+       </div>
+       </div>
     
-   
-   
-</div>
 
-
-<div class="clear-both"></div>
     
 @endsection

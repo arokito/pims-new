@@ -100,7 +100,7 @@
             <div class="card-footer text-center p-0">
               <div class="row no-gutters row-bordered row-border-light">
                 <a href="javascript:void(0)" class="d-flex col flex-column text-body py-3">
-                  <div class="font-weight-bold">{{ $parishioner->family->name ?? "N/A" }}</div>
+                  <div class="font-weight-bold">{{ $parishioner->family->community->name ?? "N/A" }}</div>
                   <div class="text-muted small">Community</div>
                 </a>
                 <a href="javascript:void(0)" class="d-flex col flex-column text-body py-3">

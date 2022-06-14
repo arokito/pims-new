@@ -17,7 +17,7 @@
 		<label for="amount" class="col-md-4 col-form-label text-md-end">{{ __('Amount') }}</label>
 
 		<div class="col-md-6">
-			<input type="text" class="form-control " name="amount"  >
+			<input type="number" class="form-control " name="amount"  >
 
 		
 		</div>
@@ -104,8 +104,6 @@
 				
 				</div>
 			</div>
-			
-			@endforeach
 
 			<div class="row mb-3 ">
 
@@ -121,6 +119,10 @@
 			
 		    </div>
 		
+			
+			@endforeach
+
+			
 		
 	</form>
 

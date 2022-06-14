@@ -26,12 +26,12 @@ class ContributionController extends Controller
     }
 
 
-    public function sendSMS($phone_number,$f_name,$la_name ,$amount, $category){
+    public function sendSMS($phone_number,$full_name ,$amount, $category){
 
         $api_key='8d4664249a9132c9'; 
         $secret_key = 'NDY1OWQ2N2JkOTgzZmRlZjBlNjlhZTUyZDY4ODVlMzM2MjFhMDEwY2YwZDI4MzFkZmJhMGM3ODFkMGRiMjhmNg==';
         
-        $message = "test";
+        $message = "Ahsante " . $full_name ."  Mchango wako kiasi cha  ".$amount. "/= kwa ajili ya  ".$category.", Umepokelewa katika Parokia yetu Ahsante na Mungu akubariki." ;
         
      
     
@@ -106,21 +106,29 @@ public function store(Request $request)
     $control_number = $request->get('control_number');
     if ($control_number) {
         $parishioner = Parishioner::where('pay_number', $control_number);
-        if ($parishioner->exists())
+        if ($parishioner->exists()) {
             $parishioner_id = $parishioner->first()->id;
+        }
     }
+    $parishioner_tmp = Parishioner::find($parishioner_id);
+    $parishioner_name = $parishioner_tmp->first_name . " " . $parishioner_tmp->last_name;
+   
+    // return response()->json(
+    //     [$parishioner_tmp, $parishioner_name]
+    //     , 200);
 
     $contribution = new Contribution;
     $contribution->parishioner_id = $parishioner_id;
     $contribution->amount = $request->get('amount');
     $contribution->payment_method_id = json_decode($request->get('payment_method'))->id;
     $contribution->category_id = json_decode($request->get('contribution_category'))->id;
-    $contribution->reference = $this->generateReceiptNumber();
+    $contribution->receipt_number =$this->generateReceiptNumber();
+   
     $contribution->save();
 
     
 
-        $this->sendSMS('255777244676', 'aron',  'rwehumbiza' , $request->amount,  json_decode($request->get('contribution_category'))->name);
+        $this->sendSMS($parishioner_tmp->phone, $parishioner_name , $request->amount,  json_decode($request->get('contribution_category'))->name);
     
 
     return redirect()->route('contributions.create')->with('message', 'Contribution received, thank you! 😊');
@@ -133,14 +141,6 @@ private function generateReceiptNumber()
     $referenceNumber=$timeString.''.$receipt;
   
     return $referenceNumber;
-}
-
-public function payCash(){
-    return view('contributions.pay_cash');
-}
-
-public function payMpesa(){
-    return view('contributions.pay_mpesa');
 }
 
 public function createContribution(){
